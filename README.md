@@ -10,6 +10,7 @@ This README provides an overview of the software and instructions on how to get 
 ## Features
 
 - **ElevenLab Voice:** LAURA can use the powerful ElevenLab API to generate natural-sounding voices for a more interactive experience.
+- **Store Exchange:** LAURA saves every exchange with the user. ( Not recommended, creates latency )
 
 ## Getting Started
 
