@@ -1,23 +1,34 @@
 from vosk import Model, KaldiRecognizer
+from dotenv import load_dotenv
 import pyaudio
 import playsound
 import requests
 import json
 from gtts import gTTS
+from elevenlabs import generate, play
 import os
 
+# Load environment variables
+load_dotenv()
+
+# AI parameters
 devmode = False
-ai_name = "Laura"
-master_name = "Vincent"
-language = "French"
-api_url = "http://localhost:1234/v1/chat/completions"
-sleep_time = 0.5  # seconds to wait between requests (to avoid too much CPU usage)
+ai_name = "Laura" # Change this if needed
+master_name = "Vincent" # Change this if needed
+language = "French" # Change this if needed
+api_url = os.getenv("API_URL")
+sleep_time = 0.5  # Seconds to wait between requests (to avoid too much CPU usage)
+elevenlabs = True # Set to True if you want to use the Eleven Labs API
+
+# ELEVENLABS
+elevenlabs_api_key = os.getenv("ELEVENLABS_API_KEY")
+elevenlabs_model = "eleven_multilingual_v2"  # Change this if needed
+elevenlabs_voice = "8NYXIvyXVhFEzg0Qgvh4"
 
 # Load a lightweight model in dev mode for faster loading
-# Doawnload the model from https://alphacephei.com/vosk/models
-model_name = "models/vosk-model-fr-0.22"
+model_name = "models/vosk-model-fr-0.22" # Download from https://alphacephei.com/vosk/models
 if devmode:
-    model_name = "models/vosk-model-small-fr-pguyot-0.3"  # For faster loading in dev mode
+    model_name = "models/vosk-model-small-fr-pguyot-0.3"
     ai_name = "Lucy"
 
 # Load the model
@@ -37,7 +48,7 @@ def send_request(input_text):
         "messages": [
             {
                 "role": "system",
-                "content": f"You are {ai_name}, an AI assistant created by {master_name} to help people. You respond only in {language}. You are friendly and helpful, providing simple and quick sentences, and you never use emoji or emoticons."
+                "content": f"You are {ai_name}, an AI assistant created by {master_name} to help people. You respond ONLY in {language}. You are friendly and helpful, providing simple and quick sentences, and you never use emoji or emoticons or add a website link in response if not requested."
             },
             {"role": "user", "content": input_text}
         ],
@@ -86,15 +97,22 @@ while True:
             if 'choices' in response_data and response_data['choices']:
                 local_response = response_data['choices'][0]['message']['content']
             else:
-                local_response = "Réponse indisponible"  # Error handling
+                local_response = f"\033[91m Error handling response from {ai_name} \033[0m"  # Error handling
 
             # Show the response from the local API
             print(f"\033[93m{ai_name} responded: {local_response}\033[0m")
 
-            # Convert the response to TTS
-            tts = gTTS(text=local_response, lang="fr", slow=False)
-            tts.save("response.mp3")
+            # Generate and play audio using Eleven Labs if configured
+            if elevenlabs is True:
+                audio = generate(local_response, voice=elevenlabs_voice, model=elevenlabs_model, api_key=elevenlabs_api_key)
+                print("Eleven Labs generated audio...")
+                play(audio)
+            else:
+                # Convert the response to TTS
+                tts = gTTS(text=local_response, lang="fr", slow=False)
+                print("TTS generated audio...")
+                tts.save("response.mp3")
 
-            # Play the response audio and clean up
-            playsound.playsound("response.mp3")
-            os.remove("response.mp3")
+                # Play the response audio and clean up
+                playsound.playsound("response.mp3")
+                os.remove("response.mp3")

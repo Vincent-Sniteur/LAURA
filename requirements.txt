@@ -1,4 +1,5 @@
 vosk
 pyaudio
 playsound==1.2.2
+elevenlabs
 gtts
