@@ -25,7 +25,7 @@ Follow these steps to set up and run LAURA on your system:
    ```bash
    cd LAURA
    ```
-3. **Download Models:**
+3. **Download VOSK Models:**
 
    - Download the necessary models from [alphacephei.com/vosk/models](https://alphacephei.com/vosk/models).
    - Add the downloaded models to the "Models" folder in the project.
@@ -47,9 +47,10 @@ Follow these steps to set up and run LAURA on your system:
    python laura.py
    ```
 
-7. **Local API Server:**
+7. **Local API Server & Models:**
 
    - To enhance LAURA's capabilities, you can use a local API server. We recommend [lmstudio.ai](https://lmstudio.ai/) for this purpose. It provides additional features and better interaction.
+   - For the model to use, look for the one that will be best for your needs. The one I use: Yarn-Mistral-7B-128k
 
 ## Development To-Do ( before 2023 )
 - Character File
